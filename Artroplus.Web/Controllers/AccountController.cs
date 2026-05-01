@@ -1,8 +1,11 @@
+using Artroplus.Core.Entities;
+using Artroplus.Core.IInterface;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using BCrypt.Net;
 
 namespace Artroplus.Web.Controllers;
 
@@ -13,10 +16,14 @@ namespace Artroplus.Web.Controllers;
 public class AccountController : Controller
 {
     private readonly ILogger<AccountController> _logger;
+    private readonly IGenericService<Kullanici> _kullaniciService;
+    private readonly IGenericService<Rol> _rolService;
 
-    public AccountController(ILogger<AccountController> logger)
+    public AccountController(ILogger<AccountController> logger, IGenericService<Kullanici> kullaniciService, IGenericService<Rol> rolService)
     {
         _logger = logger;
+        _kullaniciService = kullaniciService;
+        _rolService = rolService;
     }
 
     // [AllowAnonymous] Gerekçe: Login sayfası kimlik doğrulama gerektirmez
@@ -36,18 +43,31 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken] // CLAUDE.md Kural 2: CSRF koruması zorunlu
     public async Task<IActionResult> Login(string username, string password, string? returnUrl = null)
     {
-        // TODO: Gerçek authentication servisi ile değiştirilecek
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
             ModelState.AddModelError("", "Kullanıcı adı ve şifre gereklidir.");
             return View();
         }
 
-        // Örnek claims — gerçek implementasyonda veritabanından okunacak
+        // Veritabanından kullanıcıyı bul (IsDeleted = false otomatik uygulanır)
+        var users = await _kullaniciService.FindAsync(x => x.KullaniciAdi == username);
+        var user = users.FirstOrDefault();
+
+        if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.SifreHash))
+        {
+            ModelState.AddModelError("", "Kullanıcı adı veya şifre hatalı.");
+            return View();
+        }
+
+        // Kullanıcının rolünü al
+        var rol = await _rolService.GetByIdAsync(user.RolId);
+        string rolAd = rol?.Ad ?? "User";
+
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, username),
-            new Claim(ClaimTypes.Role, "User")
+            new Claim(ClaimTypes.Name, user.Ad + " " + user.Soyad),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Role, rolAd)
         };
 
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -64,7 +84,10 @@ public class AccountController : Controller
 
         _logger.LogInformation("Kullanıcı giriş yaptı: {Username}", username);
 
-        return LocalRedirect(returnUrl ?? "/");
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            return LocalRedirect(returnUrl);
+            
+        return RedirectToAction("Index", "Home");
     }
 
     [HttpPost]

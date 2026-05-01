@@ -1,5 +1,8 @@
+using Artroplus.Core.Entities;
+using Artroplus.Core.IInterface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace Artroplus.Web.Controllers;
 
@@ -10,15 +13,20 @@ namespace Artroplus.Web.Controllers;
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly IGenericService<GuncellemeNotu> _guncellemeService;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, IGenericService<GuncellemeNotu> guncellemeService)
     {
         _logger = logger;
+        _guncellemeService = guncellemeService;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        var notlar = await _guncellemeService.GetAllAsync();
+        var sonNotlar = notlar.OrderByDescending(x => x.OlusturulmaTarihi).Take(5).ToList();
+        
+        return View(sonNotlar);
     }
 
     public IActionResult Privacy()

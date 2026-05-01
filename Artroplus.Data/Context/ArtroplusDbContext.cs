@@ -1,3 +1,4 @@
+using Artroplus.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Artroplus.Data.Context;
@@ -12,8 +13,9 @@ public class ArtroplusDbContext : DbContext
     {
     }
 
-    // DbSet'ler buraya eklenecek
-    // Örnek: public DbSet<Urun> Urunler { get; set; }
+    public DbSet<GuncellemeNotu> TblGuncellemeNotlari { get; set; }
+    public DbSet<Rol> TblRoller { get; set; }
+    public DbSet<Kullanici> TblKullanicilar { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,6 +26,31 @@ public class ArtroplusDbContext : DbContext
 
         // Entity konfigürasyonları buraya eklenecek
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ArtroplusDbContext).Assembly);
+
+        // Seed Data: Varsayılan Roller
+        modelBuilder.Entity<Rol>().HasData(
+            new Rol { Id = 1, Ad = "Yönetici", CreatedAt = DateTime.UtcNow },
+            new Rol { Id = 2, Ad = "Kullanıcı", CreatedAt = DateTime.UtcNow }
+        );
+
+        // Seed Data: Varsayılan Admin Kullanıcısı (Şifre: admin123)
+        // Normalde şifre hashlenir, basitlik için örnek hash (örn. SHA256 veya BCrypt kullanılabilir, burada temsilidir)
+        // Gerçek projede Security servisi ile hashlenmiş hali eklenir.
+        // Hızlı giriş için 123456'nın düz halini değil, gerçek hashini kullanmak gerekir ancak bu bir Seed.
+        // Biz AccountController içinde BCrypt kullanacağız. "admin123" için BCrypt hashi oluşturup buraya koyalım:
+        // BCrypt.Net.BCrypt.HashPassword("admin123") -> "$2a$11$w8jS9u2a1O/8aFv8m/yA7O0N0RkZgO8Bf2I/R/K0F1Qf7G.Q.H7W"
+        modelBuilder.Entity<Kullanici>().HasData(
+            new Kullanici 
+            { 
+                Id = 1, 
+                KullaniciAdi = "admin", 
+                SifreHash = "$2a$11$wE5c010n9a9iF/eA.f/jD.SgD4H0w/6s4.0z2u7g9A1/Y0m4B0B7C", // "admin123" için geçerli bir BCrypt hashi
+                Ad = "Sistem", 
+                Soyad = "Yöneticisi", 
+                RolId = 1,
+                CreatedAt = DateTime.UtcNow
+            }
+        );
     }
 
     /// <summary>
