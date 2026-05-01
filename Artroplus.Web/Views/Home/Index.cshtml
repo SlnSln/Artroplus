@@ -1,0 +1,117 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<!--begin::Page Header-->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="fs-4 fw-bold text-dark mb-1">Dashboard</h1>
+        <p class="text-muted mb-0 fs-6">Hoş geldiniz, @User.Identity?.Name!</p>
+    </div>
+    <div class="text-muted small">
+        <i class="bi bi-calendar3 me-1"></i>@DateTime.Now.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("tr-TR"))
+    </div>
+</div>
+<!--end::Page Header-->
+
+<!--begin::Stats Row-->
+<div class="row g-4 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background: rgba(27,132,255,0.1);">
+                    <i class="bi bi-people-fill fs-4" style="color: #1b84ff;"></i>
+                </div>
+                <div>
+                    <div class="fs-5 fw-bold text-dark">0</div>
+                    <div class="text-muted small">Toplam Kullanıcı</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background: rgba(23,198,83,0.1);">
+                    <i class="bi bi-check-circle-fill fs-4" style="color: #17c653;"></i>
+                </div>
+                <div>
+                    <div class="fs-5 fw-bold text-dark">0</div>
+                    <div class="text-muted small">Aktif İşlem</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background: rgba(255,161,0,0.1);">
+                    <i class="bi bi-clock-fill fs-4" style="color: #ffa100;"></i>
+                </div>
+                <div>
+                    <div class="fs-5 fw-bold text-dark">0</div>
+                    <div class="text-muted small">Bekleyen</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background: rgba(232,76,61,0.1);">
+                    <i class="bi bi-exclamation-triangle-fill fs-4" style="color: #e84c3d;"></i>
+                </div>
+                <div>
+                    <div class="fs-5 fw-bold text-dark">0</div>
+                    <div class="text-muted small">Hata</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end::Stats Row-->
+
+<!--begin::Welcome Card-->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-info-circle me-2 text-primary"></i>Artroplus Kurulumu Tamamlandı</h5>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-primary border-0" role="alert">
+            <div class="d-flex align-items-start gap-3">
+                <i class="bi bi-rocket-takeoff-fill fs-4 mt-1"></i>
+                <div>
+                    <h6 class="mb-1 fw-bold">Proje başarıyla yapılandırıldı!</h6>
+                    <p class="mb-2">5 katmanlı ASP.NET Core mimarisi kurulumu tamamlandı.</p>
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-check-circle text-success"></i>
+                                <small><strong>Artroplus.Core</strong> — Entity, DTO, Interface</small>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-check-circle text-success"></i>
+                                <small><strong>Artroplus.Data</strong> — Repository, DbContext</small>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-check-circle text-success"></i>
+                                <small><strong>Artroplus.Service</strong> — İş mantığı servisleri</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-check-circle text-success"></i>
+                                <small><strong>Artroplus.Api</strong> — IP kısıtlı API</small>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-check-circle text-success"></i>
+                                <small><strong>Artroplus.Web</strong> — Metronic UI</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end::Welcome Card-->

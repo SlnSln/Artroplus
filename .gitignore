@@ -1,0 +1,61 @@
+## .gitignore — Artroplus
+
+# Build outputs
+bin/
+obj/
+out/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# NuGet
+*.nupkg
+.nuget/
+packages/
+
+# ASP.NET Core secrets & sensitive files
+# CLAUDE.md Kural 4: Hassas bilgiler bu dosyalara yazılmaz
+.env
+.env.*
+appsettings.Production.json
+appsettings.Development.json
+secrets.json
+appsettings.*.json
+
+# Keep base appsettings
+!appsettings.json
+
+# Publish output
+publish/
+**/publish/
+
+# Log files
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test results
+TestResults/
+coverage/
+
+# Entity Framework Migrations (isteğe bağlı - takımla karar verin)
+# **/Migrations/
+
+# Node modules (Metronic assets)
+node_modules/
+wwwroot/lib/
+
+# User-specific files
+*.rsuser
+*.dbmdl

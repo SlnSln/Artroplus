@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Artroplus.Core\Artroplus.Core.csproj" />
+    <ProjectReference Include="..\Artroplus.Service\Artroplus.Service.csproj" />
+    <ProjectReference Include="..\Artroplus.Data\Artroplus.Data.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>
