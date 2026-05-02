@@ -1,37 +1,19 @@
-using Artroplus.Core.IInterface;
-using Artroplus.Core.IRepositories;
-using Artroplus.Data.Context;
-using Artroplus.Data.Repositories;
-using Artroplus.Service.Services;
 using Artroplus.Web.Services;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // =============================================
-// BAĞLANTI AYARLARI
-// CLAUDE.md Kural 4: Connection string Environment Variable'dan okunur
-// =============================================
-var connectionString = Environment.GetEnvironmentVariable("ARTROPLUS_CONNECTION_STRING")
-    ?? builder.Configuration.GetConnectionString("DefaultConnection");
-
-builder.Services.AddDbContext<ArtroplusDbContext>(options =>
-    options.UseSqlServer(connectionString));
-
-// =============================================
-// DI KAYITLARI
-// CLAUDE.md Kural 7: Servisler interface üzerinden kaydedilir
-// =============================================
-builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
-
-// =============================================
-// API İSTEMCİSİ (CLAUDE.md Mimari Kural)
-// Login doğrulaması Artroplus.Api üzerinden yapılır
+// API İSTEMCİLERİ (CLAUDE.md Mimari Kural)
+// Web katmanı DB'ye doğrudan erişemez; tüm veri işlemleri Artroplus.Api üzerinden yapılır.
 // =============================================
 var apiBaseUrl = builder.Configuration["ArtroplusApi:BaseUrl"] ?? "https://localhost:7000";
+
 builder.Services.AddHttpClient<IAuthApiService, AuthApiService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
+builder.Services.AddHttpClient<IGuncellemeApiService, GuncellemeApiService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
 });

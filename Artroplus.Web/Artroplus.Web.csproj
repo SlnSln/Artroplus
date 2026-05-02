@@ -2,12 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Artroplus.Core\Artroplus.Core.csproj" />
-    <ProjectReference Include="..\Artroplus.Service\Artroplus.Service.csproj" />
-    <ProjectReference Include="..\Artroplus.Data\Artroplus.Data.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
   </ItemGroup>
 
   <PropertyGroup>
