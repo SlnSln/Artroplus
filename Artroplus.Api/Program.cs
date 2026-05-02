@@ -1,7 +1,9 @@
 using System.Net;
+using Artroplus.Core.IInterface;
 using Artroplus.Core.IRepositories;
 using Artroplus.Data.Context;
 using Artroplus.Data.Repositories;
+using Artroplus.Service.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +24,7 @@ builder.Services.AddDbContext<ArtroplusDbContext>(options =>
 // =============================================
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
 
 // =============================================
 // AUTHENTICATION & AUTHORIZATION

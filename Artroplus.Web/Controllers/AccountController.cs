@@ -1,29 +1,25 @@
-using Artroplus.Core.Entities;
-using Artroplus.Core.IInterface;
+using Artroplus.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using BCrypt.Net;
 
 namespace Artroplus.Web.Controllers;
 
 /// <summary>
 /// CLAUDE.md Kural 1: [AllowAnonymous] yalnızca Login/Register için kullanılabilir.
-/// Bu controller'ın tüm action'ları gerekçesiyle AllowAnonymous içerir.
+/// CLAUDE.md Mimari Kural: Kimlik doğrulama Artroplus.Api üzerinden gerçekleştirilir.
 /// </summary>
 public class AccountController : Controller
 {
     private readonly ILogger<AccountController> _logger;
-    private readonly IGenericService<Kullanici> _kullaniciService;
-    private readonly IGenericService<Rol> _rolService;
+    private readonly IAuthApiService _authApiService;
 
-    public AccountController(ILogger<AccountController> logger, IGenericService<Kullanici> kullaniciService, IGenericService<Rol> rolService)
+    public AccountController(ILogger<AccountController> logger, IAuthApiService authApiService)
     {
         _logger = logger;
-        _kullaniciService = kullaniciService;
-        _rolService = rolService;
+        _authApiService = authApiService;
     }
 
     // [AllowAnonymous] Gerekçe: Login sayfası kimlik doğrulama gerektirmez
@@ -49,25 +45,20 @@ public class AccountController : Controller
             return View();
         }
 
-        // Veritabanından kullanıcıyı bul (IsDeleted = false otomatik uygulanır)
-        var users = await _kullaniciService.FindAsync(x => x.KullaniciAdi == username);
-        var user = users.FirstOrDefault();
+        // Kimlik doğrulama Artroplus.Api üzerinden yapılır (CLAUDE.md Mimari Kural)
+        var kullanici = await _authApiService.LoginAsync(username, password);
 
-        if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.SifreHash))
+        if (kullanici == null)
         {
             ModelState.AddModelError("", "Kullanıcı adı veya şifre hatalı.");
             return View();
         }
 
-        // Kullanıcının rolünü al
-        var rol = await _rolService.GetByIdAsync(user.RolId);
-        string rolAd = rol?.Ad ?? "User";
-
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, user.Ad + " " + user.Soyad),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Role, rolAd)
+            new Claim(ClaimTypes.Name, kullanici.Ad + " " + kullanici.Soyad),
+            new Claim(ClaimTypes.NameIdentifier, kullanici.Id.ToString()),
+            new Claim(ClaimTypes.Role, kullanici.RolAd)
         };
 
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -86,7 +77,7 @@ public class AccountController : Controller
 
         if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             return LocalRedirect(returnUrl);
-            
+
         return RedirectToAction("Index", "Home");
     }
 
